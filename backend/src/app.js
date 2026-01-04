@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const blockRoutes = require("./routes/block.routes.js");
 const txRoutes = require("./routes/tx.routes.js");
 const statsRoutes = require("./routes/stats.routes.js");
+const analyticsRoutes = require("./routes/analytics.routes.js");
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get("/health", (req, res) => {
 app.use("/api/block", blockRoutes);
 app.use("/api/tx", txRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {

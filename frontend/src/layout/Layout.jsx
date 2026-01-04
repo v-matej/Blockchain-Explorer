@@ -1,16 +1,35 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { Home as HomeIcon } from "lucide-react";
+import { Outlet, NavLink } from "react-router-dom";
+import { Home as HomeIcon, BarChart3 } from "lucide-react";
 import TopBar from "./TopBar";
 import bitcoinLogo from "../assets/bitcoin.png";
 
-export default function Layout() {
-  const navigate = useNavigate();
-
+function NavItem({ to, icon: Icon, label }) {
   return (
-    <div className="min-h-screen flex bg-black text-neutral-100">
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `
+        flex items-center gap-3 px-3 py-2 rounded-md transition
+        ${
+          isActive
+            ? "bg-neutral-900 text-orange-400"
+            : "text-gray-200 hover:bg-neutral-900 hover:text-orange-400"
+        }
+        `
+      }
+    >
+      <Icon size={18} />
+      <span className="font-medium">{label}</span>
+    </NavLink>
+  );
+}
+
+export default function Layout() {
+  return (
+    <div className="h-screen flex bg-black text-neutral-100">
       {/* Sidebar */}
-      <aside className="w-56 border-r border-neutral-800 bg-neutral-950 p-4">
-        <div className="flex items-center gap-3">
+      <aside className="w-56 shrink-0 border-r border-neutral-800 bg-neutral-950 p-4">
+        <div className="flex items-center gap-3 mb-6">
           <img
             src={bitcoinLogo}
             alt="Bitcoin logo"
@@ -19,21 +38,20 @@ export default function Layout() {
           <h1 className="text-lg font-bold">OSS Explorer</h1>
         </div>
 
-        
-        <br></br>
-        <div
-          onClick={() => navigate("/")}
-          className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer
-                     text-orange-400 hover:bg-neutral-900 transition"
-        >
-          <HomeIcon size={18} />
-          <span className="font-medium">Home</span>
-        </div>
+        <nav className="space-y-1">
+          <NavItem to="/" icon={HomeIcon} label="Home" />
+          <NavItem to="/analytics" icon={BarChart3} label="Analytics" />
+        </nav>
       </aside>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col">
-        <TopBar />
+      {/* Main column */}
+      <div className="flex-1 flex flex-col h-full">
+        {/* Fixed TopBar */}
+        <div className="shrink-0">
+          <TopBar />
+        </div>
+
+        {/* Scrollable content */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>

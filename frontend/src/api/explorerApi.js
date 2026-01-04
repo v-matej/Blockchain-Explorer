@@ -27,3 +27,23 @@ export async function fetchLatestBlocks(limit = 10) {
   }
   return res.json();
 }
+
+export async function fetchBlockchainStats(limit) {
+  const res = await fetch(
+    `http://localhost:3000/api/analytics/blockchain?limit=${limit}`
+  );
+  if (!res.ok) throw new Error("Analytics fetch failed");
+  return res.json();
+}
+
+export async function fetchBlockchainHistory(metric, timespan) {
+  const res = await fetch(
+    `http://localhost:3000/api/analytics/chart/${metric}?timespan=${timespan}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch blockchain history");
+  }
+
+  return res.json();
+}
