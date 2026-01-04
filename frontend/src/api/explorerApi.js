@@ -17,3 +17,13 @@ export async function fetchTx(txid) {
   if (!res.ok) throw new Error("Transaction not found");
   return res.json();
 }
+
+export async function fetchLatestBlocks(limit = 10) {
+  const res = await fetch(
+    `http://localhost:3000/api/block/latest?limit=${limit}`
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch latest blocks");
+  }
+  return res.json();
+}

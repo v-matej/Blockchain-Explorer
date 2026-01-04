@@ -9,6 +9,16 @@ export default function Layout() {
     <div className="min-h-screen flex bg-black text-neutral-100">
       {/* Sidebar */}
       <aside className="w-56 border-r border-neutral-800 bg-neutral-950 p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-black font-bold">
+            ₿
+          </div>
+
+          <h1 className="text-lg font-bold">OSS Explorer</h1>
+        </div>
+
+        
+        <br></br>
         <div
           onClick={() => navigate("/")}
           className="flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer
