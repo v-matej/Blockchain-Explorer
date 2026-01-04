@@ -1,8 +1,7 @@
 import { useState } from "react";
-import TransactionPage from "./TransactionPage";
-import BlockPage from "./BlockPage";
-
 import SearchBar from "../components/SearchBar";
+import BlockPage from "./BlockPage";
+import TransactionPage from "./TransactionPage";
 import {
   fetchBlockByHeight,
   fetchBlockByHash,
@@ -13,81 +12,67 @@ export default function Explorer() {
   const [result, setResult] = useState(null);
   const [type, setType] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-    function handleTxClick(txid) {
-        handleSearch(txid);
-    }
-
-    function handleBlockClick(hash) {
-        handleSearch(hash);
-    }
 
   async function handleSearch(value) {
-    setLoading(true);
+    const q = String(value).trim();
+    if (!q) return;
+
     setError(null);
     setResult(null);
     setType(null);
 
     try {
-        // 1️⃣ Block height
-        if (/^\d+$/.test(value)) {
-        const data = await fetchBlockByHeight(value);
+      // height
+      if (/^\d+$/.test(q)) {
+        const data = await fetchBlockByHeight(q);
         setType("block");
         setResult(data);
-        setLoading(false);
         return;
-        }
+      }
 
-        // 2️⃣ Hash (tx FIRST, then block)
-        if (value.length === 64) {
+      // 64-hex: try TX first, then block
+      if (q.length === 64) {
         try {
-            const tx = await fetchTx(value);
-            setType("tx");
-            setResult(tx);
-            setLoading(false);
-            return;
+          const tx = await fetchTx(q);
+          setType("tx");
+          setResult(tx);
+          return;
         } catch {
-            const block = await fetchBlockByHash(value);
-            setType("block");
-            setResult(block);
-            setLoading(false);
-            return;
+          const block = await fetchBlockByHash(q);
+          setType("block");
+          setResult(block);
+          return;
         }
-        }
+      }
 
-        throw new Error("Invalid input");
-    } catch (err) {
-        setError("Nothing found for this value.");
+      throw new Error("Invalid input");
+    } catch {
+      setError("Nothing found for this value.");
     }
   }
 
+  const openTx = (txid) => handleSearch(txid);
+  const openBlock = (hashOrHeight) => handleSearch(hashOrHeight);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-        {/* Header / Search */}
-        <div className="max-w-[1600px] mx-auto px-[clamp(1.5rem,4vw,4rem)] py-6">
-            <h1 className="text-[clamp(1.8rem,2.5vw,2.6rem)] font-bold mb-4">
-            Bitcoin Block Explorer
-            </h1>
-            <SearchBar onSearch={handleSearch} />
-            {error && <p className="text-red-500 mt-4">{error}</p>}
-        </div>
+    <div className="min-h-screen text-neutral-100">
+      <div className="max-w-[1600px] mx-auto px-[clamp(1.5rem,4vw,4rem)] py-6">
+        <h1 className="text-[clamp(1.8rem,2.5vw,2.6rem)] font-bold mb-4">
+          Bitcoin Block Explorer
+        </h1>
 
-        {/* Content */}
-        {type === "tx" && result && <TransactionPage data={result} />}
-        {type === "block" && result && (
-            <BlockPage
-                data={result}
-                onTxClick={handleTxClick}
-                onBlockClick={handleBlockClick}
-            />
-        )}
+        <SearchBar onSearch={handleSearch} />
 
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+      </div>
 
-        <div className="max-w-[1600px] mx-auto px-[clamp(1.5rem,4vw,4rem)] py-6">
-            {loading && <p className="text-[clamp(1.8rem,2.5vw,2.6rem)] font-bold mb-5">Loading…</p>}
-        </div>
+      {type === "block" && result && (
+        <BlockPage data={result} onOpenTx={openTx} onOpenBlock={openBlock} />
+      )}
+
+      {type === "tx" && result && (
+        <TransactionPage data={result} onOpenTx={openTx} onOpenBlock={openBlock} />
+      )}
     </div>
   );
 }

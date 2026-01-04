@@ -1,58 +1,48 @@
 const { callRpc } = require("../services/bitcoinRpc.service.js");
 
-/**
- * Helper: zbroj izlaza
- */
-function calculateTotalOutput(vout) {
-  return vout.reduce((sum, o) => sum + o.value, 0);
-}
+async function mapTxSummary(tx) {
+  let blockHeight = null;
 
-/**
- * Helper: izračun fee-a
- * (input - output)
- */
-function calculateFee(vin, totalOutput) {
-  let totalInput = 0;
-
-  for (const input of vin) {
-    if (input.prevout && input.prevout.value) {
-      totalInput += input.prevout.value;
-    }
+  if (tx.blockhash) {
+    blockHeight = await callRpc("getblockheader", [tx.blockhash]);
   }
 
-  return totalInput > 0 ? totalInput - totalOutput : null;
-}
-
-function mapTransactionSummary(tx) {
-  const totalOutput = calculateTotalOutput(tx.vout);
-  const fee = calculateFee(tx.vin, totalOutput);
+  const totalOutputBTC = tx.vout.reduce(
+    (sum, v) => sum + v.value,
+    0
+  );
 
   return {
     txid: tx.txid,
-    confirmations: tx.confirmations || 0,
-    blockhash: tx.blockhash || null,
     timestamp: tx.time || null,
+    confirmations: tx.confirmations || 0,
+
+    blockHash: tx.blockhash || null,
+    blockHeight: blockHeight?.height ?? null,
+
     size: tx.size,
     vsize: tx.vsize,
     inputCount: tx.vin.length,
     outputCount: tx.vout.length,
-    totalOutput,
-    fee,
+
+    totalOutputBTC: Number(totalOutputBTC.toFixed(8)),
+    feeBTC:
+      tx.fee !== undefined
+        ? Number(tx.fee.toFixed(8))
+        : null,
+
+    isCoinbase: tx.vin[0]?.coinbase !== undefined,
+    rbf: tx.vin.some(v => v.sequence < 0xfffffffe),
   };
 }
 
-/**
- * Novi endpoint: summary + raw
- */
 async function getTransactionSummary(req, res) {
   try {
     const { txid } = req.params;
-
-    // verbose = true
     const tx = await callRpc("getrawtransaction", [txid, true]);
 
     res.json({
-      summary: mapTransactionSummary(tx),
+      summary: await mapTxSummary(tx),
       raw: tx,
     });
   } catch (err) {
@@ -60,9 +50,6 @@ async function getTransactionSummary(req, res) {
   }
 }
 
-/**
- * Postojeći endpoint (ne diramo)
- */
 async function getTransaction(req, res) {
   try {
     const { txid } = req.params;

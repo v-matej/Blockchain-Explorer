@@ -1,33 +1,64 @@
-export default function TxDetailsPanel({ summary, raw }) {
-  return (
-    <div className="border rounded-xl bg-neutral-900 p-[clamp(1.25rem,2vw,2rem)]">
-      <h2 className="font-semibold text-[clamp(1.2rem,1.5vw,1.6rem)] mb-6">
-        Transaction Details
-      </h2>
+import HashWithCopy from "../common/HashWithCopy";
 
-      <div className="grid grid-cols-2 gap-x-10 gap-y-4">
-        <Detail label="Block Hash" value={summary.blockhash} />
-        <Detail label="Size" value={`${summary.size} bytes`} />
-        <Detail label="Virtual Size" value={`${summary.vsize} vB`} />
-        <Detail label="Inputs" value={summary.inputCount} />
-        <Detail label="Outputs" value={summary.outputCount} />
-        <Detail label="Version" value={raw.version} />
-        <Detail label="Locktime" value={raw.locktime} />
-        <Detail label="RBF" value={raw.rbf ? "Yes" : "No"} />
-        <Detail
-          label="SegWit"
-          value={raw.vin.some(v => v.txinwitness) ? "Yes" : "No"}
-        />
+export default function TxDetailsPanel({ summary, raw, onOpenBlock }) {
+  return (
+    <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-6">
+      <h3 className="font-semibold mb-4">Advanced Details</h3>
+
+      <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+        <Label label="Block Hash">
+            <HashWithCopy value={summary.blockHash} onClick={() => onOpenBlock(summary.blockHash)} />
+        </Label>
+
+        <Label label="Block Height">
+            <HashWithCopy value={summary.blockHeight} onClick={() => onOpenBlock(summary.blockHeight)} />
+        </Label>
+
+        <Label label="Time">
+          {new Date(summary.timestamp * 1000).toLocaleString()}
+        </Label>
+
+        <Label label="Size">
+          {summary.size} bytes
+        </Label>
+
+        <Label label="Virtual Size">
+          {summary.vsize} vB
+        </Label>
+
+        <Label label="Inputs">
+          {summary.inputCount}
+        </Label>
+
+        <Label label="Outputs">
+          {summary.outputCount}
+        </Label>
+
+        <Label label="Version">
+          {raw.version}
+        </Label>
+
+        <Label label="Locktime">
+          {raw.locktime}
+        </Label>
+
+        <Label label="Coinbase">
+          {summary.isCoinbase ? "Yes" : "No"}
+        </Label>
+
+        <Label label="RBF">
+          {summary.rbf ? "Yes" : "No"}
+        </Label>
       </div>
     </div>
   );
 }
 
-function Detail({ label, value }) {
+function Label({ label, children }) {
   return (
     <>
-      <div className="text-gray-400">{label}</div>
-      <div className="break-all text-gray-200">{value ?? "-"}</div>
+      <div className="text-gray-500">{label}</div>
+      <div className="text-gray-200 break-all">{children}</div>
     </>
   );
 }

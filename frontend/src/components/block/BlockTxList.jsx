@@ -1,6 +1,6 @@
 import HashWithCopy from "../common/HashWithCopy";
 
-export default function BlockTxList({ txs, onTxClick }) {
+export default function BlockTxList({ txs, onOpenTx }) {
   return (
     <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-5">
       <h3 className="font-semibold mb-4">
@@ -25,13 +25,7 @@ export default function BlockTxList({ txs, onTxClick }) {
           >
             <div className="flex justify-between">
               <div>
-                <HashWithCopy
-                  value={tx.txid}
-                  linkable
-                  onClick={() =>
-                    onTxClick(tx.txid)
-                  }
-                />
+                <HashWithCopy value={tx.txid} onClick={() => onOpenTx(tx.txid)} />
                 <p className="text-xs text-gray-500 mt-1">
                   Inputs: {tx.vin.length} • Outputs:{" "}
                   {tx.vout.length}

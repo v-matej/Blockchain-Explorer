@@ -1,30 +1,18 @@
-import TxSummaryPanel from "../components/tx/TxSummaryPanel";
+import TxOverviewPanel from "../components/tx/TxOverviewPanel";
 import TxDetailsPanel from "../components/tx/TxDetailsPanel";
-import TxIOList from "../components/tx/TxIOList";
+import TxIOSection from "../components/tx/TxIOSection";
 
-export default function TransactionPage({ data }) {
+export default function TransactionPage({ data, onOpenTx, onOpenBlock }) {
+  if (!data) return null;
+
   return (
-    <div className="max-w-[1600px] mx-auto px-[clamp(1.5rem,4vw,4rem)] py-10 space-y-10 text-[clamp(1rem,1.2vw,1.25rem)]">
-      {/* Header */}
-      <div>
-        <h1 className="font-bold tracking-tight text-[clamp(1.8rem,2.5vw,2.6rem)]">
-          Bitcoin Transaction
-        </h1>
-        <p className="text-gray-400 mt-1">
-          {data.summary.timestamp
-            ? new Date(data.summary.timestamp * 1000).toLocaleString()
-            : "Unconfirmed"}
-        </p>
+    <div className="max-w-[1700px] mx-auto px-10 py-10 space-y-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1.8fr] gap-10">
+        <TxOverviewPanel summary={data.summary} raw={data.raw} onOpenBlock={onOpenBlock} />
+        <TxDetailsPanel summary={data.summary} raw={data.raw} onOpenBlock={onOpenBlock} />
       </div>
 
-      {/* Summary + Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_2fr] gap-8">
-        <TxSummaryPanel summary={data.summary} />
-        <TxDetailsPanel summary={data.summary} raw={data.raw} />
-      </div>
-
-      {/* Inputs / Outputs */}
-      <TxIOList raw={data.raw} />
+      <TxIOSection raw={data.raw} onOpenTx={onOpenTx} />
     </div>
   );
 }

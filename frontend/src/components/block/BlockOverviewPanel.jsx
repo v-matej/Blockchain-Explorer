@@ -3,7 +3,7 @@ import HashWithCopy from "../common/HashWithCopy";
 export default function BlockOverviewPanel({
   summary,
   raw,
-  onBlockClick,
+  onOpenBlock,
 }) {
   return (
     <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-6 space-y-6">
@@ -35,27 +35,15 @@ export default function BlockOverviewPanel({
       {/* Two-column details */}
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
         <Label label="Hash">
-          <HashWithCopy
-            value={summary.hash}
-            linkable
-            onClick={() =>
-              onBlockClick(summary.hash)
-            }
-          />
+          <HashWithCopy value={summary.hash} onClick={() => onOpenBlock(summary.hash)} />
         </Label>
 
         <Label label="Previous Block">
-          <HashWithCopy
-            value={raw.previousblockhash}
-            linkable
-            onClick={() =>
-              onBlockClick(raw.previousblockhash)
-            }
-          />
+          <HashWithCopy value={raw.previousblockhash} onClick={() => onOpenBlock(raw.previousblockhash)} />
         </Label>
 
         <Label label="Merkle Root">
-          <HashWithCopy value={raw.merkleroot} />
+          <HashWithCopy value={raw.merkleroot} />  {}
         </Label>
 
         <Label label="Transactions">
