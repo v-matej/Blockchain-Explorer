@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
+import SearchBar from "./SearchBar";
 
 export default function TopBar() {
   const navigate = useNavigate();
