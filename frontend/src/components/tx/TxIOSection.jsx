@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import HashWithCopy from "../common/HashWithCopy";
 
-export default function TxIOSection({ raw , onOpenTx }) {
+export default function TxIOSection({ raw }) {
+  const navigate = useNavigate();
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Inputs */}
@@ -15,7 +18,7 @@ export default function TxIOSection({ raw , onOpenTx }) {
               </span>
             ) : (
               <>
-                <HashWithCopy value={vin.txid} onClick={() => onOpenTx(vin.txid)} />
+                <HashWithCopy value={vin.txid} onClick={() => navigate(`/tx/${vin.txid}`)} />
                 <p className="text-xs text-gray-500">
                   Vout: {vin.vout}
                 </p>

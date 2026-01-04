@@ -1,17 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import HashWithCopy from "../common/HashWithCopy";
 
-export default function TxDetailsPanel({ summary, raw, onOpenBlock }) {
+export default function TxDetailsPanel({ summary, raw }) {
+  const navigate = useNavigate();
+
   return (
     <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-6">
       <h3 className="font-semibold mb-4">Advanced Details</h3>
 
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
         <Label label="Block Hash">
-            <HashWithCopy value={summary.blockHash} onClick={() => onOpenBlock(summary.blockHash)} />
+            <HashWithCopy value={summary.blockHash} onClick={() => navigate(`/block/${summary.blockHash}`)} />
         </Label>
 
         <Label label="Block Height">
-            <HashWithCopy value={summary.blockHeight} onClick={() => onOpenBlock(summary.blockHeight)} />
+            <HashWithCopy value={summary.blockHeight} onClick={() => navigate(`/block/${summary.blockHeight}`)} />
         </Label>
 
         <Label label="Time">

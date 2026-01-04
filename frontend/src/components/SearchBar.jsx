@@ -29,7 +29,7 @@ export default function SearchBar({ onSearch }) {
           border border-neutral-700
           focus:outline-none
           focus:ring-2
-          focus:ring-blue-600
+          focus:ring-orange-400
         "
       />
 
@@ -39,7 +39,7 @@ export default function SearchBar({ onSearch }) {
           rounded-lg
           px-5
           py-3
-          bg-blue-600
+          bg-orange-400
           text-white
           font-medium
           hover:bg-blue-700

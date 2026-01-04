@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import HashWithCopy from "../common/HashWithCopy";
 
-export default function BlockTxList({ txs, onOpenTx }) {
+export default function BlockTxList({ txs }) {
+  const navigate = useNavigate();
+
   return (
     <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-5">
       <h3 className="font-semibold mb-4">
@@ -25,7 +28,7 @@ export default function BlockTxList({ txs, onOpenTx }) {
           >
             <div className="flex justify-between">
               <div>
-                <HashWithCopy value={tx.txid} onClick={() => onOpenTx(tx.txid)} />
+                <HashWithCopy value={tx.txid} onClick={() => navigate(`/tx/${tx.txid}`)} />
                 <p className="text-xs text-gray-500 mt-1">
                   Inputs: {tx.vin.length} • Outputs:{" "}
                   {tx.vout.length}

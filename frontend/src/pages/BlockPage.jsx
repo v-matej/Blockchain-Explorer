@@ -10,12 +10,10 @@ export default function BlockPage({ data, onOpenTx, onOpenBlock }) {
         <BlockOverviewPanel
           summary={data.summary}
           raw={data.raw}
-          onOpenBlock={onOpenBlock}
         />
 
         <BlockTxList
           txs={data.raw.tx}
-          onOpenTx={onOpenTx}
         />
       </div>
     </div>

@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import HashWithCopy from "../common/HashWithCopy";
 
-export default function TxOverviewPanel({ summary, raw, onOpenBlock }) {
+export default function TxOverviewPanel({ summary }) {
+  const navigate = useNavigate();
+  
   return (
     <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-6 space-y-6">
       {/* Header */}
@@ -41,7 +44,7 @@ export default function TxOverviewPanel({ summary, raw, onOpenBlock }) {
         <div className="text-sm text-gray-300">
           Mined in block{" "}
           <span
-            onClick={() => onOpenBlock(summary.blockHash)}
+            onClick={() => navigate(`/block/${summary.blockHash}`)}
             className="text-orange-400 cursor-pointer hover:underline"
           >
             {summary.blockHeight}

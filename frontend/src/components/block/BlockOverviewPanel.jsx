@@ -1,10 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import HashWithCopy from "../common/HashWithCopy";
 
 export default function BlockOverviewPanel({
   summary,
-  raw,
-  onOpenBlock,
+  raw
 }) {
+  const navigate = useNavigate();
   return (
     <div className="border border-neutral-800 rounded-lg bg-neutral-900 p-6 space-y-6">
       {/* Header */}
@@ -35,11 +36,11 @@ export default function BlockOverviewPanel({
       {/* Two-column details */}
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
         <Label label="Hash">
-          <HashWithCopy value={summary.hash} onClick={() => onOpenBlock(summary.hash)} />
+          <HashWithCopy value={summary.hash} onClick={() => navigate(`/block/${summary.hash}`)} />
         </Label>
 
         <Label label="Previous Block">
-          <HashWithCopy value={raw.previousblockhash} onClick={() => onOpenBlock(raw.previousblockhash)} />
+          <HashWithCopy value={raw.previousblockhash} onClick={() => navigate(`/block/${raw.previousblockhash}`)} />
         </Label>
 
         <Label label="Merkle Root">
