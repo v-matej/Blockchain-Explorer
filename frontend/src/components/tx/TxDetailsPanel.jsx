@@ -2,7 +2,7 @@ export default function TxDetailsPanel({ summary, raw }) {
   return (
     <div className="border rounded-xl bg-neutral-900 p-[clamp(1.25rem,2vw,2rem)]">
       <h2 className="font-semibold text-[clamp(1.2rem,1.5vw,1.6rem)] mb-6">
-        Advanced Details
+        Transaction Details
       </h2>
 
       <div className="grid grid-cols-2 gap-x-10 gap-y-4">
