@@ -10,6 +10,9 @@ import {
 } from "recharts";
 
 const RANGES = [
+  { label: "1H", value: 1 / 24 },
+  { label: "6H", value: 6 / 24 },
+  { label: "12H", value: 12 / 24 },
   { label: "24H", value: 1 },
   { label: "1W", value: 7 },
   { label: "1M", value: 30 },
@@ -88,15 +91,21 @@ export default function BtcPriceChart() {
               <XAxis
                 dataKey="time"
                 tickFormatter={(t) =>
-                  new Date(t).toLocaleDateString(undefined, {
-                    month: "short",
-                    day: "numeric",
-                  })
+                    range <= 1
+                    ? new Date(t).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        })
+                    : new Date(t).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        })
                 }
                 tick={{ fill: "#9ca3af", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
-              />
+                />
+
 
               <YAxis
                 domain={["auto", "auto"]}
