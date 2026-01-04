@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Home as HomeIcon } from "lucide-react";
 import TopBar from "./TopBar";
+import bitcoinLogo from "../assets/bitcoin.png";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -10,10 +11,11 @@ export default function Layout() {
       {/* Sidebar */}
       <aside className="w-56 border-r border-neutral-800 bg-neutral-950 p-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-black font-bold">
-            ₿
-          </div>
-
+          <img
+            src={bitcoinLogo}
+            alt="Bitcoin logo"
+            className="w-10 h-10 rounded-full"
+          />
           <h1 className="text-lg font-bold">OSS Explorer</h1>
         </div>
 

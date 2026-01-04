@@ -42,7 +42,7 @@ export default function SearchBar({ onSearch }) {
           bg-orange-400
           text-white
           font-medium
-          hover:bg-blue-700
+          hover:bg-orange-700
           transition
         "
       >

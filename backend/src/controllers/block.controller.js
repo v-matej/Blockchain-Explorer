@@ -125,9 +125,37 @@ async function getBlockSummaryByHeight(req, res) {
   }
 }
 
+async function getLatestBlocks(req, res) {
+  try {
+    const limit = Number(req.query.limit) || 10;
+
+    const currentHeight = await callRpc("getblockcount");
+    const blocks = [];
+
+    for (let i = 0; i < limit; i++) {
+      const height = currentHeight - i;
+      const hash = await callRpc("getblockhash", [height]);
+      const block = await callRpc("getblock", [hash, 1]);
+
+      blocks.push({
+        height,
+        hash,
+        time: block.time,
+        txCount: block.nTx,
+        size: block.size,
+      });
+    }
+
+    res.json(blocks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 module.exports = {
   getBlockByHash,
   getBlockByHeight,
   getBlockSummaryByHash,
   getBlockSummaryByHeight,
+  getLatestBlocks,
 };

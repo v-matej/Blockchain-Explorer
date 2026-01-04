@@ -15,3 +15,27 @@ body,
 body {
   @apply bg-neutral-950 text-neutral-100;
 }
+
+/* Minimal dark scrollbar */
+.scrollbar-minimal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+
+.scrollbar-minimal:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Firefox */
+.scrollbar-minimal {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
