@@ -1,9 +1,9 @@
 const express = require("express");
-const { getBlockchainStats, getBlockchainChart } = require("../controllers/analytics.controller");
+const { getBlockchainStats, getBlockchainChart, getNetworkInsights } = require("../controllers/analytics.controller");
 
 const router = express.Router();
 
-// router.get("/blockchain", getBlockchainStats);
 router.get("/chart/:metric", getBlockchainChart);
+router.get("/network-insights", getNetworkInsights);
 
 module.exports = router;

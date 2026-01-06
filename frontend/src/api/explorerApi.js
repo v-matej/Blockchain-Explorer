@@ -47,3 +47,15 @@ export async function fetchBlockchainHistory(metric, timespan) {
 
   return res.json();
 }
+
+export async function fetchNetworkInsights() {
+  const res = await fetch(
+    "http://localhost:3000/api/analytics/network-insights"
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch network insights");
+  }
+
+  return res.json();
+}

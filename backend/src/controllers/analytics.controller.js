@@ -81,4 +81,46 @@ async function getBlockchainChart(req, res) {
   }
 }
 
-module.exports = { getBlockchainStats, getBlockchainChart };
+async function getNetworkInsights(req, res) {
+  try {
+    const info = await callRpc("getblockchaininfo");
+    const hashRate = await callRpc("getnetworkhashps", [120]);
+
+    const height = info.blocks;
+    const difficulty = info.difficulty;
+
+    const BLOCKS_PER_EPOCH = 2016;
+    const lastAdjustmentHeight =
+      height - (height % BLOCKS_PER_EPOCH);
+
+    const blocksIntoEpoch =
+      height - lastAdjustmentHeight;
+
+    const HALVING_INTERVAL = 210000;
+    const LAST_HALVING = 840000;
+
+    const nextHalving =
+      LAST_HALVING +
+      Math.floor(
+        (height - LAST_HALVING) / HALVING_INTERVAL + 1
+      ) * HALVING_INTERVAL;
+
+    res.json({
+      height,
+      difficulty,
+      hashRate,
+      epoch: {
+        blocksIntoEpoch,
+        total: BLOCKS_PER_EPOCH,
+      },
+      halving: {
+        nextHalving,
+        blocksRemaining: nextHalving - height,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+module.exports = { getBlockchainStats, getBlockchainChart, getNetworkInsights };
