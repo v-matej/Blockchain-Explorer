@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { Home as HomeIcon, BarChart3 } from "lucide-react";
+import { Home as HomeIcon, BarChart3, ArrowLeftRight  } from "lucide-react";
 import TopBar from "./TopBar";
 import bitcoinLogo from "../assets/bitcoin.png";
 
@@ -41,6 +41,7 @@ export default function Layout() {
         <nav className="space-y-1">
           <NavItem to="/" icon={HomeIcon} label="Home" />
           <NavItem to="/analytics" icon={BarChart3} label="Analytics" />
+          <NavItem to="/mempool" icon={ArrowLeftRight} label="Mempool" />
         </nav>
       </aside>
 

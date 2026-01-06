@@ -6,6 +6,7 @@ const blockRoutes = require("./routes/block.routes.js");
 const txRoutes = require("./routes/tx.routes.js");
 const statsRoutes = require("./routes/stats.routes.js");
 const analyticsRoutes = require("./routes/analytics.routes.js");
+const mempoolRoutes = require("./routes/mempool.routes.js");
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use("/api/block", blockRoutes);
 app.use("/api/tx", txRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/mempool", mempoolRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => {

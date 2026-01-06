@@ -20,7 +20,7 @@ export async function fetchTx(txid) {
 
 export async function fetchLatestBlocks(limit = 10) {
   const res = await fetch(
-    `http://localhost:3000/api/block/latest?limit=${limit}`
+    `${API_BASE}/block/latest?limit=${limit}`
   );
   if (!res.ok) {
     throw new Error("Failed to fetch latest blocks");
@@ -30,7 +30,7 @@ export async function fetchLatestBlocks(limit = 10) {
 
 export async function fetchBlockchainStats(limit) {
   const res = await fetch(
-    `http://localhost:3000/api/analytics/blockchain?limit=${limit}`
+    `${API_BASE}/analytics/blockchain?limit=${limit}`
   );
   if (!res.ok) throw new Error("Analytics fetch failed");
   return res.json();
@@ -38,7 +38,7 @@ export async function fetchBlockchainStats(limit) {
 
 export async function fetchBlockchainHistory(metric, timespan) {
   const res = await fetch(
-    `http://localhost:3000/api/analytics/chart/${metric}?timespan=${timespan}`
+    `${API_BASE}/analytics/chart/${metric}?timespan=${timespan}`
   );
 
   if (!res.ok) {
@@ -50,11 +50,55 @@ export async function fetchBlockchainHistory(metric, timespan) {
 
 export async function fetchNetworkInsights() {
   const res = await fetch(
-    "http://localhost:3000/api/analytics/network-insights"
+    `${API_BASE}/analytics/network-insights`
   );
 
   if (!res.ok) {
     throw new Error("Failed to fetch network insights");
+  }
+
+  return res.json();
+}
+
+export async function fetchMempoolOverview() {
+  const res = await fetch(`${API_BASE}/mempool/overview`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch mempool overview");
+  }
+
+  return res.json();
+}
+
+export async function fetchMempoolTransactions(limit = 200) {
+  const res = await fetch(
+    `${API_BASE}/mempool/transactions?limit=${limit}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch mempool transactions");
+  }
+
+  return res.json();
+}
+
+export async function fetchMempoolFeeDistribution() {
+  const res = await fetch(`${API_BASE}/mempool/fee-distribution`);
+  if (!res.ok) throw new Error("Failed to fetch fee distribution");
+
+  const buckets = await res.json();
+
+  return Object.entries(buckets).map(([range, count]) => ({
+    range,
+    count,
+  }));
+}
+
+export async function fetchMempoolDelta() {
+  const res = await fetch(`${API_BASE}/mempool/delta`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch mempool delta");
   }
 
   return res.json();
