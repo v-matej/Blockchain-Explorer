@@ -20,9 +20,14 @@ export default function BlockOverviewPanel({
           Mined on{" "}
           {new Date(summary.timestamp * 1000).toLocaleString()}
         </p>
-        <p className="text-sm text-gray-500 mt-1">
-          Miner: Unknown
-        </p>
+        {summary.coinbaseMessage && (
+          <p className="text-sm text-gray-500 mt-1">
+            Coinbase message:{" "}
+            <span className="text-gray-300 font-mono">
+              {summary.coinbaseMessage}
+            </span>
+          </p>
+        )}
       </div>
 
       {/* Description */}

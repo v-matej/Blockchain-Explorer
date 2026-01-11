@@ -1,5 +1,16 @@
 const { callRpc } = require("../services/bitcoinRpc.service.js");
 
+function decodeCoinbaseMessage(hex) {
+  try {
+    return Buffer.from(hex, "hex")
+      .toString("utf8")
+      .replace(/[^\x20-\x7E]/g, "")
+      .trim();
+  } catch {
+    return null;
+  }
+}
+
 async function computeBlockEconomicStats(block) {
   // 1) Always reliable from decoded txs
   let totalOutputBTC = 0;
@@ -44,6 +55,16 @@ async function computeBlockEconomicStats(block) {
 }
 
 async function mapBlockSummary(block) {
+  let coinbaseMessage = null;
+
+  const coinbaseHex = block.tx?.[0]?.vin?.[0]?.coinbase;
+  if (coinbaseHex) {
+    const decoded = decodeCoinbaseMessage(coinbaseHex);
+    if (decoded && decoded.length > 2) {
+      coinbaseMessage = decoded;
+    }
+  }
+
   const economic = await computeBlockEconomicStats(block);
 
   return {
@@ -71,7 +92,7 @@ async function mapBlockSummary(block) {
     inputs: economic.inputs,
     outputs: economic.outputs,
 
-    miner: "Unknown",
+    coinbaseMessage,
   };
 }
 
