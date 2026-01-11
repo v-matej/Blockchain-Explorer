@@ -81,6 +81,74 @@ async function getBlockchainChart(req, res) {
   }
 }
 
+/* -------------------- BTC PRICE CHART -------------------- */
+
+const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
+
+function rangeToSeconds(range) {
+  switch (range) {
+    case "1h": return 60 * 60;
+    case "6h": return 6 * 60 * 60;
+    case "12h": return 12 * 60 * 60;
+    case "24h": return 24 * 60 * 60;
+    case "7d": return 7 * 24 * 60 * 60;
+    case "30d": return 30 * 24 * 60 * 60;
+    case "365d": return 365 * 24 * 60 * 60;
+    default: return null;
+  }
+}
+
+async function getBtcPriceChart(req, res) {
+  try {
+    const range = String(req.query.range || "24h").toLowerCase();
+    const now = Math.floor(Date.now() / 1000);
+
+    // ALL range → CoinGecko supports directly
+    if (range === "max") {
+      const url =
+        `${COINGECKO_BASE}/coins/bitcoin/market_chart` +
+        `?vs_currency=usd&days=max`;
+
+      const response = await axios.get(url, { timeout: 10000 });
+
+      return res.json(
+        response.data.prices.map(([time, price]) => ({
+          time,
+          price,
+        }))
+      );
+    }
+
+    // Sub-day & normal ranges → use /range
+    const seconds = rangeToSeconds(range);
+    if (!seconds) {
+      return res.status(400).json({ error: "Invalid range" });
+    }
+
+    const from = now - seconds;
+
+    const url =
+      `${COINGECKO_BASE}/coins/bitcoin/market_chart/range` +
+      `?vs_currency=usd&from=${from}&to=${now}`;
+
+    const response = await axios.get(url, { timeout: 10000 });
+
+    // Downsample for performance
+    const prices = response.data.prices || [];
+    const MAX_POINTS = 400;
+    const step = Math.max(1, Math.floor(prices.length / MAX_POINTS));
+
+    res.json(
+      prices
+        .filter((_, i) => i % step === 0)
+        .map(([time, price]) => ({ time, price }))
+    );
+  } catch (err) {
+    console.error("BTC price chart error:", err.message);
+    res.status(500).json({ error: "Failed to fetch BTC price chart" });
+  }
+}
+
 async function getNetworkInsights(req, res) {
   try {
     const info = await callRpc("getblockchaininfo");
@@ -123,4 +191,72 @@ async function getNetworkInsights(req, res) {
   }
 }
 
-module.exports = { getBlockchainStats, getBlockchainChart, getNetworkInsights };
+/* ---------------- BTC MARKET SNAPSHOT ---------------- */
+
+let btcMarketCache = null;
+let btcMarketLastFetch = 0;
+const BTC_MARKET_TTL = 60_000; // 60s cache
+
+async function getBtcMarket(req, res) {
+  try {
+    const now = Date.now();
+
+    if (
+      btcMarketCache &&
+      now - btcMarketLastFetch < BTC_MARKET_TTL
+    ) {
+      return res.json(btcMarketCache);
+    }
+
+    const response = await axios.get(
+      "https://api.coingecko.com/api/v3/coins/bitcoin",
+      {
+        params: {
+          localization: false,
+          tickers: false,
+          market_data: true,
+          community_data: false,
+          developer_data: false,
+          sparkline: false,
+        },
+        headers: {
+          "User-Agent": "OSS-Explorer/1.0",
+        },
+        timeout: 10_000,
+      }
+    );
+
+    const market = response.data.market_data;
+
+    const payload = {
+      price: market.current_price.usd,
+      change24h: market.price_change_percentage_24h,
+      marketCap: market.market_cap.usd,
+      marketCapChange24h:
+        market.market_cap_change_percentage_24h,
+      volume24h: market.total_volume.usd,
+      fdv: market.fully_diluted_valuation.usd,
+      totalSupply: market.total_supply,
+      maxSupply: market.max_supply,
+    };
+
+    btcMarketCache = payload;
+    btcMarketLastFetch = now;
+
+    res.json(payload);
+  } catch (err) {
+    console.error("BTC market error:", err.message);
+    res.status(500).json({
+      error: "Failed to fetch BTC market data",
+    });
+  }
+}
+
+
+module.exports = {
+  getBlockchainStats,
+  getBlockchainChart,
+  getNetworkInsights,
+  getBtcPriceChart,
+  getBtcMarket,
+};

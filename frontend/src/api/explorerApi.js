@@ -103,3 +103,25 @@ export async function fetchMempoolDelta() {
 
   return res.json();
 }
+
+export async function fetchBtcPriceSeries(range = "24h") {
+  const res = await fetch(`${API_BASE}/analytics/btc-price?range=${range}`);
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Request failed: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export async function fetchBtcMarket() {
+  const res = await fetch(`${API_BASE}/analytics/btc-market`);
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Request failed: ${res.status}`);
+  }
+
+  return res.json();
+}
