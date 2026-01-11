@@ -18,7 +18,9 @@ export default function TxDetailsPanel({ summary, raw }) {
         </Label>
 
         <Label label="Time">
-          {new Date(summary.timestamp * 1000).toLocaleString()}
+          {summary.confirmations > 0
+            ? `${new Date(summary.timestamp * 1000).toLocaleString()}`
+            : "Pending (in mempool)"}
         </Label>
 
         <Label label="Size">

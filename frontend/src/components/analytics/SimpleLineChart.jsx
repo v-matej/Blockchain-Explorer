@@ -17,8 +17,10 @@ function formatValue(value, unit) {
     return value.toLocaleString();
   }
 
-  if (unit === "bytes") {
-    return `${(value / 1e6).toFixed(1)} MB`;
+  if (unit === "MB") {
+    if (value >= 1e6) return `${(value / 1e6).toFixed(2)} TB`;
+    if (value >= 1e3) return `${(value / 1e3).toFixed(2)} GB`;
+    return `${value.toFixed(0)} MB`;
   }
 
   if (unit === "BTC") {

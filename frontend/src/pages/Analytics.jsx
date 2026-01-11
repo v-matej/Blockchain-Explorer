@@ -144,7 +144,7 @@ export default function Analytics() {
           <SimpleLineChart
             data={blockSize}
             dataKey="value"
-            unit="bytes"
+            unit="MB"
           />
           <Insight>
             The blockchain size increases monotonically as new blocks are added.

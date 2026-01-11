@@ -1,4 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Home as HomeIcon, BarChart3, ArrowLeftRight  } from "lucide-react";
 import TopBar from "./TopBar";
 import bitcoinLogo from "../assets/bitcoin.png";
@@ -25,6 +26,8 @@ function NavItem({ to, icon: Icon, label }) {
 }
 
 export default function Layout() {
+  const navigate = useNavigate();
+
   return (
     <div className="h-screen flex bg-black text-neutral-100">
       {/* Sidebar */}
@@ -34,8 +37,9 @@ export default function Layout() {
             src={bitcoinLogo}
             alt="Bitcoin logo"
             className="w-10 h-10 rounded-full"
+            onClick={() => navigate(`/`)}
           />
-          <h1 className="text-lg font-bold">OSS Explorer</h1>
+          <h1 className="text-lg font-bold" onClick={() => navigate(`/`)}>OSS Explorer</h1>
         </div>
 
         <nav className="space-y-1">
