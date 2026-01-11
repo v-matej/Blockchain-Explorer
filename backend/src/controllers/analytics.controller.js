@@ -98,54 +98,80 @@ function rangeToSeconds(range) {
   }
 }
 
+let btcChartCache = {};
+let btcChartLastFetch = {};
+
 async function getBtcPriceChart(req, res) {
   try {
     const range = String(req.query.range || "24h").toLowerCase();
     const now = Math.floor(Date.now() / 1000);
 
-    // ALL range → CoinGecko supports directly
+    const cacheKey = `btc_${range}`;
+    const nowMs = Date.now();
+
+    if (
+      btcChartCache[cacheKey] &&
+      nowMs - btcChartLastFetch[cacheKey] < CACHE_TTL
+    ) {
+      return res.json(btcChartCache[cacheKey]);
+    }
+
+    let prices = [];
+
     if (range === "max") {
       const url =
         `${COINGECKO_BASE}/coins/bitcoin/market_chart` +
         `?vs_currency=usd&days=max`;
 
-      const response = await axios.get(url, { timeout: 10000 });
+      const response = await axios.get(url, {
+        timeout: 10000,
+        headers: {
+          "User-Agent": "OSS-Explorer/1.0 (contact: dev@oss-explorer)",
+          "Accept": "application/json",
+        },
+      });
 
-      return res.json(
-        response.data.prices.map(([time, price]) => ({
-          time,
-          price,
-        }))
-      );
+      prices = response.data.prices || [];
+    } else {
+      const seconds = rangeToSeconds(range);
+      if (!seconds) {
+        return res.status(400).json({ error: "Invalid range" });
+      }
+
+      const from = now - seconds;
+
+      const url =
+        `${COINGECKO_BASE}/coins/bitcoin/market_chart/range` +
+        `?vs_currency=usd&from=${from}&to=${now}`;
+
+      const response = await axios.get(url, {
+        timeout: 10000,
+        headers: {
+          "User-Agent": "OSS-Explorer/1.0 (contact: dev@oss-explorer)",
+          "Accept": "application/json",
+        },
+      });
+
+      prices = response.data.prices || [];
     }
 
-    // Sub-day & normal ranges → use /range
-    const seconds = rangeToSeconds(range);
-    if (!seconds) {
-      return res.status(400).json({ error: "Invalid range" });
-    }
-
-    const from = now - seconds;
-
-    const url =
-      `${COINGECKO_BASE}/coins/bitcoin/market_chart/range` +
-      `?vs_currency=usd&from=${from}&to=${now}`;
-
-    const response = await axios.get(url, { timeout: 10000 });
-
-    // Downsample for performance
-    const prices = response.data.prices || [];
+    // Downsample
     const MAX_POINTS = 400;
     const step = Math.max(1, Math.floor(prices.length / MAX_POINTS));
 
-    res.json(
-      prices
-        .filter((_, i) => i % step === 0)
-        .map(([time, price]) => ({ time, price }))
-    );
+    const data = prices
+      .filter((_, i) => i % step === 0)
+      .map(([time, price]) => ({ time, price }));
+
+    btcChartCache[cacheKey] = data;
+    btcChartLastFetch[cacheKey] = nowMs;
+
+    res.json(data);
   } catch (err) {
     console.error("BTC price chart error:", err.message);
-    res.status(500).json({ error: "Failed to fetch BTC price chart" });
+    res
+      .status(502)
+      .json({ error: "Failed to fetch BTC price chart" });
   }
 }
 

@@ -18,7 +18,6 @@ const RANGES = [
   { label: "1W", value: "7d" },
   { label: "1M", value: "30d" },
   { label: "1Y", value: "365d" },
-  { label: "ALL", value: "max" },
 ];
 
 export default function BtcPriceChart() {
